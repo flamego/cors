@@ -21,6 +21,8 @@ type Options struct {
 	Scheme string
 	// ALLOW_DOMAIN may be a comma separated list of domains that are allowed to run CORS requests
 	// Special values are the  a single '*' wildcard that will allow any domain to send requests without
+	// credentials and the special '!*' wildcard which will reply with requesting domain in the 'access-control-allow-origin'
+	// header and hence allow requests from any domain *with* credentials.
 	AllowDomain []string
 	// AllowSubdomain allowed
 	AllowSubdomain bool
