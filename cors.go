@@ -13,20 +13,19 @@ import (
 
 const anyDomain = "!*"
 
-/*
-Options to configure the CORS middleware read from the [cors] section of the ini configuration file.
-SCHEME may be http or https as accepted schemes or the '*' wildcard to accept any scheme.
-ALLOW_DOMAIN may be a comma separated list of domains that are allowed to run CORS requests
-Special values are the  a single '*' wildcard that will allow any domain to send requests without
-credentials and the special '!*' wildcard which will reply with requesting domain in the 'access-control-allow-origin'
-header and hence allow requests from any domain *with* credentials.
-ALLOW_SUBDOMAIN set to true accepts requests from any subdomains of ALLOW_DOMAIN.
-METHODS may be a comma separated list of HTTP-methods to be accepted.
-MAX_AGE_SECONDS may be the duration in secs for which the response is cached (default 600).
-ref: https://stackoverflow.com/questions/54300997/is-it-possible-to-cache-http-options-response?noredirect=1#comment95790277_54300997
-ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
-ALLOW_CREDENTIALS set to false rejects any request with credentials.
-*/
+// Options to configure the CORS middleware read from the [cors] section of the ini configuration file.
+// SCHEME may be http or https as accepted schemes or the '*' wildcard to accept any scheme.
+// ALLOW_DOMAIN may be a comma separated list of domains that are allowed to run CORS requests
+// Special values are the  a single '*' wildcard that will allow any domain to send requests without
+// credentials and the special '!*' wildcard which will reply with requesting domain in the 'access-control-allow-origin'
+// header and hence allow requests from any domain *with* credentials.
+// ALLOW_SUBDOMAIN set to true accepts requests from any subdomains of ALLOW_DOMAIN.
+// METHODS may be a comma separated list of HTTP-methods to be accepted.
+// MAX_AGE_SECONDS may be the duration in secs for which the response is cached (default 600).
+// ref: https://stackoverflow.com/questions/54300997/is-it-possible-to-cache-http-options-response?noredirect=1#comment95790277_54300997
+// ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
+// ALLOW_CREDENTIALS set to false rejects any request with credentials.
+
 type Options struct {
 	Section          string
 	Scheme           string
