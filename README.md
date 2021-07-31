@@ -17,7 +17,7 @@ import (
 )
 func main() {
 	f := flamego.Classic()
-	f.Use(CORS())
+	f.Use(cors.CORS())
 	f.Get("/", func(c flamego.Context) string {
         return "ok"
     })
