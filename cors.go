@@ -86,13 +86,13 @@ func CORS(options ...Options) flamego.Handler {
 		} else {
 			origin := ctx.Request().Header.Get("Origin")
 			if reqOptions && origin == "" {
-				respErrorf(ctx, log, http.StatusBadRequest, "missing origin header in CORS request")
+				http.Error(ctx.ResponseWriter(), "missing origin header in CORS request", http.StatusBadRequest)
 				return
 			}
 
 			u, err := url.Parse(origin)
 			if err != nil {
-				respErrorf(ctx, log, http.StatusBadRequest, "Failed to parse CORS origin header. Reason: %v", err)
+				http.Error(ctx.ResponseWriter(), fmt.Sprintf("Failed to parse CORS origin header. Reason: %v", err), http.StatusBadRequest)
 				return
 			}
 
@@ -112,7 +112,7 @@ func CORS(options ...Options) flamego.Handler {
 				headers["vary"] = "Origin"
 			}
 			if reqOptions && !ok {
-				respErrorf(ctx, log, http.StatusBadRequest, "CORS request from prohibited domain %v", origin)
+				http.Error(ctx.ResponseWriter(), fmt.Sprintf("CORS request from prohibited domain %v", origin), http.StatusBadRequest)
 				return
 			}
 		}
@@ -127,16 +127,5 @@ func CORS(options ...Options) flamego.Handler {
 			ctx.ResponseWriter().WriteHeader(http.StatusOK) // return response
 			return
 		}
-	}
-}
-
-func respErrorf(ctx flamego.Context, log *log.Logger, statusCode int, format string, a ...interface{}) {
-	msg := fmt.Sprintf(format, a...)
-	log.Println(msg)
-	ctx.ResponseWriter().WriteHeader(statusCode)
-
-	_, err := ctx.ResponseWriter().Write([]byte(msg))
-	if err != nil {
-		panic(err)
 	}
 }
