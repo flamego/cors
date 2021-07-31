@@ -77,12 +77,12 @@ func CORS(options ...Options) flamego.Handler {
 		reqOptions := ctx.Request().Method == http.MethodOptions
 
 		headers := map[string]string{
-			"access-control-allow-methods": strings.Join(opt.Methods, ","),
-			"access-control-allow-headers": ctx.Request().Header.Get("access-control-request-headers"),
-			"access-control-max-age":       strconv.Itoa(opt.MaxAgeSeconds),
+			"Access-Control-Allow-Methods": strings.Join(opt.Methods, ","),
+			"Access-Control-Allow-Headers": ctx.Request().Header.Get("Access-Control-Request-Headers"),
+			"Access-Control-Max-Age":       strconv.Itoa(opt.MaxAgeSeconds),
 		}
 		if opt.AllowDomain[0] == "*" {
-			headers["access-control-allow-origin"] = "*"
+			headers["Access-Control-Allow-Origin"] = "*"
 		} else {
 			origin := ctx.Request().Header.Get("Origin")
 			if reqOptions && origin == "" {
@@ -107,9 +107,9 @@ func CORS(options ...Options) flamego.Handler {
 				if opt.Scheme != "*" {
 					u.Scheme = opt.Scheme
 				}
-				headers["access-control-allow-origin"] = u.String()
-				headers["access-control-allow-credentials"] = strconv.FormatBool(opt.AllowCredentials)
-				headers["vary"] = "Origin"
+				headers["Access-Control-Allow-Origin"] = u.String()
+				headers["Access-Control-Allow-Credentials"] = strconv.FormatBool(opt.AllowCredentials)
+				headers["Vary"] = "Origin"
 			}
 			if reqOptions && !ok {
 				http.Error(ctx.ResponseWriter(), fmt.Sprintf("CORS request from prohibited domain %v", origin), http.StatusBadRequest)
