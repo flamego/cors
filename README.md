@@ -7,6 +7,24 @@
 
 Package cors is a middleware that provides the Cross-Origin Resource Sharing.
 
+## Getting started
+
+```go
+package main
+import (
+	"github.com/flamego/flamego"
+	"github.com/flamego/cors"
+)
+func main() {
+	f := flamego.Classic()
+	f.Use(CORS())
+	f.Get("/", func(c flamego.Context) string {
+        return "ok"
+    })
+	f.Run()
+}
+```
+
 ## Installation
 
 The minimum requirement of Go is **1.16**.
