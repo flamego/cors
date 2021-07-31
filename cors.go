@@ -41,36 +41,30 @@ func prepareOptions(options []Options) Options {
 	var opt Options
 	if len(options) > 0 {
 		opt = options[0]
-	} else {
-		if len(opt.Section) == 0 {
-			opt.Section = "cors"
+	}
+
+	if len(opt.Section) == 0 {
+		opt.Section = "cors"
+	}
+	if len(opt.Scheme) == 0 {
+		opt.Scheme = "http"
+	}
+	if len(opt.AllowDomain) == 0 {
+		opt.AllowDomain = []string{"*"}
+	}
+	if len(opt.Methods) == 0 {
+		opt.Methods = []string{
+			http.MethodGet,
+			http.MethodHead,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+			http.MethodOptions,
 		}
-		if len(opt.Scheme) == 0 {
-			opt.Scheme = "http"
-		}
-		if len(opt.AllowDomain) == 0 {
-			opt.AllowDomain = []string{"*"}
-		}
-		if !opt.AllowSubdomain {
-			opt.AllowSubdomain = false
-		}
-		if len(opt.Methods) == 0 {
-			opt.Methods = []string{
-				http.MethodGet,
-				http.MethodHead,
-				http.MethodPost,
-				http.MethodPut,
-				http.MethodPatch,
-				http.MethodDelete,
-				http.MethodOptions,
-			}
-		}
-		if opt.MaxAgeSeconds <= 0 {
-			opt.MaxAgeSeconds = 600
-		}
-		if !opt.AllowCredentials {
-			opt.AllowCredentials = true
-		}
+	}
+	if opt.MaxAgeSeconds <= 0 {
+		opt.MaxAgeSeconds = 600
 	}
 
 	return opt
@@ -104,7 +98,7 @@ func CORS(options ...Options) flamego.Handler {
 				return
 			}
 
-			ok := false
+			var ok bool
 			for _, d := range opt.AllowDomain {
 				if u.Hostname() == d || (opt.AllowSubdomain && strings.HasSuffix(u.Hostname(), "."+d)) || d == anyDomain {
 					ok = true
@@ -132,7 +126,7 @@ func CORS(options ...Options) flamego.Handler {
 		})
 
 		if reqOptions {
-			ctx.ResponseWriter().WriteHeader(200) // return response
+			ctx.ResponseWriter().WriteHeader(http.StatusOK) // return response
 			return
 		}
 	}
