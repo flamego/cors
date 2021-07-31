@@ -12,16 +12,16 @@ Package cors is a middleware that provides the Cross-Origin Resource Sharing.
 ```go
 package main
 import (
-	"github.com/flamego/flamego"
-	"github.com/flamego/cors"
+    "github.com/flamego/flamego"
+    "github.com/flamego/cors"
 )
 func main() {
-	f := flamego.Classic()
-	f.Use(cors.CORS())
-	f.Get("/", func(c flamego.Context) string {
+    f := flamego.Classic()
+    f.Use(cors.CORS())
+    f.Get("/", func(c flamego.Context) string {
         return "ok"
     })
-	f.Run()
+    f.Run()
 }
 ```
 
