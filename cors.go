@@ -147,5 +147,4 @@ func respErrorf(ctx flamego.Context, log *log.Logger, statusCode int, format str
 	if err != nil {
 		panic(err)
 	}
-	return
 }
