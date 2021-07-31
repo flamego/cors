@@ -17,7 +17,6 @@ const anyDomain = "!*"
 // ref: https://stackoverflow.com/questions/54300997/is-it-possible-to-cache-http-options-response?noredirect=1#comment95790277_54300997
 // ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
 type Options struct {
-	Section string
 	// SCHEME may be http or https as accepted schemes or the '*' wildcard to accept any scheme.
 	Scheme string
 	// ALLOW_DOMAIN may be a comma separated list of domains that are allowed to run CORS requests
@@ -39,9 +38,6 @@ func prepareOptions(options []Options) Options {
 		opt = options[0]
 	}
 
-	if len(opt.Section) == 0 {
-		opt.Section = "cors"
-	}
 	if len(opt.Scheme) == 0 {
 		opt.Scheme = "http"
 	}
