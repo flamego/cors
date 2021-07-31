@@ -25,7 +25,6 @@ const anyDomain = "!*"
 // ref: https://stackoverflow.com/questions/54300997/is-it-possible-to-cache-http-options-response?noredirect=1#comment95790277_54300997
 // ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
 // ALLOW_CREDENTIALS set to false rejects any request with credentials.
-
 type Options struct {
 	Section          string
 	Scheme           string
