@@ -22,20 +22,20 @@ const anyDomain = "!*"
 // ref: https://stackoverflow.com/questions/54300997/is-it-possible-to-cache-http-options-response?noredirect=1#comment95790277_54300997
 // ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
 type Options struct {
-	// SCHEME may be http or https as accepted schemes or the '*' wildcard to accept any scheme.
+	// Scheme may be http or https as accepted schemes or the '*' wildcard to accept any scheme. (default: "http")
 	Scheme string
-	// ALLOW_DOMAIN may be a comma separated list of domains that are allowed to run CORS requests
+	// AllowDomain is a comma separated list of domains that are allowed to run CORS requests
 	// Special values are the  a single '*' wildcard that will allow any domain to send requests without
 	// credentials and the special '!*' wildcard which will reply with requesting domain in the 'access-control-allow-origin'
-	// header and hence allow requests from any domain *with* credentials.
+	// header and hence allow requests from any domain *with* credentials. (default '*')
 	AllowDomain []string
-	// AllowSubdomain allowed
+	// AllowSubdomain allowed subdomains of domains to run CORS requests. (default false)
 	AllowSubdomain bool
-	// METHODS may be a comma separated list of HTTP-methods to be accepted.
+	// Methods may be a comma separated list of HTTP-methods to be accepted. (default GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH)
 	Methods []string
-	// MAX_AGE_SECONDS may be the duration in secs for which the response is cached (default 600).
+	// MaxAgeSeconds may be the duration in secs for which the response is cached. (default 600)
 	MaxAgeSeconds int
-	// ALLOW_CREDENTIALS set to false rejects any request with credentials.
+	// AllowCredentials set to false rejects any request with credentials. (default false)
 	AllowCredentials bool
 }
 
@@ -58,8 +58,6 @@ func prepareOptions(options []Options) Options {
 			http.MethodPost,
 			http.MethodPut,
 			http.MethodPatch,
-			http.MethodDelete,
-			http.MethodOptions,
 		}
 	}
 	if opt.MaxAgeSeconds <= 0 {
