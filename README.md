@@ -13,8 +13,8 @@ Package cors is a middleware that provides the Cross-Origin Resource Sharing.
 package main
 
 import (
-	"github.com/flamego/flamego"
 	"github.com/flamego/cors"
+	"github.com/flamego/flamego"
 )
 
 func main() {
