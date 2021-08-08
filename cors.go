@@ -18,9 +18,7 @@ import (
 
 const anyDomain = "!*"
 
-// Options to configure the CORS middleware read from the [cors] section of the ini configuration file.
-// ref: https://stackoverflow.com/questions/54300997/is-it-possible-to-cache-http-options-response?noredirect=1#comment95790277_54300997
-// ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
+// Options contains options for the cors.CORS middleware.
 type Options struct {
 	// Scheme may be http or https as accepted schemes or the '*' wildcard to accept any scheme. (default: "http")
 	Scheme string
