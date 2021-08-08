@@ -51,13 +51,9 @@ func prepareOptions(options []Options) Options {
 	}
 	if len(opt.Methods) == 0 {
 		opt.Methods = []string{
-			http.MethodDelete,
 			http.MethodGet,
-			http.MethodHead,
 			http.MethodOptions,
 			http.MethodPost,
-			http.MethodPut,
-			http.MethodPatch,
 		}
 	}
 	if opt.MaxAgeSeconds <= 0 {
