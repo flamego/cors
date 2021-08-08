@@ -29,7 +29,7 @@ type Options struct {
 	AllowDomain []string
 	// AllowSubdomain allowed subdomains of domains to run CORS requests. (default false)
 	AllowSubdomain bool
-	// Methods may be a comma separated list of HTTP-methods to be accepted. (default GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH)
+	// Methods may be a comma separated list of HTTP-methods to be accepted. (default GET, POST, OPTIONS)
 	Methods []string
 	// MaxAgeSeconds may be the duration in secs for which the response is cached. (default 600)
 	MaxAgeSeconds int
