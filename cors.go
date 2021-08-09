@@ -50,7 +50,7 @@ func prepareOptions(options []Options) Options {
 		opt = options[0]
 	}
 
-	if len(opt.Scheme) == 0 {
+	if opt.Scheme == "" {
 		opt.Scheme = "http"
 	}
 	if len(opt.AllowDomain) == 0 {
