@@ -23,7 +23,7 @@ func TestCORS(t *testing.T) {
 	})
 
 	resp := httptest.NewRecorder()
-	req, err := http.NewRequest(http.MethodGet, "/", nil)
+	req, err := http.NewRequest(http.MethodOptions, "/", nil)
 	assert.Nil(t, err)
 
 	f.ServeHTTP(resp, req)
