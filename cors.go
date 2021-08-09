@@ -7,7 +7,6 @@ package cors
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -74,7 +73,7 @@ func prepareOptions(options []Options) Options {
 // adequate "Access-Control-*" response headers.
 func CORS(options ...Options) flamego.Handler {
 	opt := prepareOptions(options)
-	return func(ctx flamego.Context, log *log.Logger) {
+	return func(ctx flamego.Context) {
 		reqOptions := ctx.Request().Method == http.MethodOptions
 
 		headers := map[string]string{
