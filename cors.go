@@ -16,8 +16,6 @@ import (
 	"github.com/flamego/flamego"
 )
 
-const anyDomain = "!*"
-
 // Options contains options for the cors.CORS middleware.
 type Options struct {
 	// Scheme may be http or https as accepted schemes or the '*' wildcard to accept any scheme. (default: "http")
@@ -93,7 +91,7 @@ func CORS(options ...Options) flamego.Handler {
 
 			var ok bool
 			for _, d := range opt.AllowDomain {
-				if u.Hostname() == d || (opt.AllowSubdomain && strings.HasSuffix(u.Hostname(), "."+d)) || d == anyDomain {
+				if u.Hostname() == d || (opt.AllowSubdomain && strings.HasSuffix(u.Hostname(), "."+d)) || d == "!*" {
 					ok = true
 					break
 				}
