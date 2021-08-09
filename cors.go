@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/flamego/flamego"
 )
@@ -62,8 +63,8 @@ func prepareOptions(options []Options) Options {
 			http.MethodPost,
 		}
 	}
-	if opt.MaxAgeSeconds <= 0 {
-		opt.MaxAgeSeconds = 600
+	if opt.MaxAge.Seconds() <= 0 {
+		opt.MaxAge = time.Duration(600) * time.Second
 	}
 
 	return opt
@@ -79,7 +80,7 @@ func CORS(options ...Options) flamego.Handler {
 		headers := map[string]string{
 			"Access-Control-Allow-Methods": strings.Join(opt.Methods, ","),
 			"Access-Control-Allow-Headers": ctx.Request().Header.Get("Access-Control-Request-Headers"),
-			"Access-Control-Max-Age":       strconv.Itoa(opt.MaxAgeSeconds),
+			"Access-Control-Max-Age":       fmt.Sprintf("%.0f", opt.MaxAge.Seconds()),
 		}
 		if opt.AllowDomain[0] == "*" {
 			headers["Access-Control-Allow-Origin"] = "*"
