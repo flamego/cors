@@ -125,6 +125,5 @@ func CORS(options ...Options) flamego.Handler {
 		})
 
 		ctx.ResponseWriter().WriteHeader(http.StatusOK) // return response
-		return
 	}
 }
