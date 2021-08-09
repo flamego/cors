@@ -75,6 +75,7 @@ func CORS(options ...Options) flamego.Handler {
 	opt := prepareOptions(options)
 	return func(ctx flamego.Context) {
 		if ctx.Request().Method != http.MethodOptions {
+			ctx.Next()
 			return
 		}
 
