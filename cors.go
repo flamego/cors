@@ -74,7 +74,9 @@ func prepareOptions(options []Options) Options {
 func CORS(options ...Options) flamego.Handler {
 	opt := prepareOptions(options)
 	return func(ctx flamego.Context) {
-		reqOptions := ctx.Request().Method == http.MethodOptions
+		if ctx.Request().Method != http.MethodOptions {
+			return
+		}
 
 		headers := map[string]string{
 			"Access-Control-Allow-Methods": strings.Join(opt.Methods, ","),
@@ -85,7 +87,7 @@ func CORS(options ...Options) flamego.Handler {
 			headers["Access-Control-Allow-Origin"] = "*"
 		} else {
 			origin := ctx.Request().Header.Get("Origin")
-			if reqOptions && origin == "" {
+			if origin == "" {
 				http.Error(ctx.ResponseWriter(), "missing origin header in CORS request", http.StatusBadRequest)
 				return
 			}
@@ -110,8 +112,7 @@ func CORS(options ...Options) flamego.Handler {
 				headers["Access-Control-Allow-Origin"] = u.String()
 				headers["Access-Control-Allow-Credentials"] = strconv.FormatBool(opt.AllowCredentials)
 				headers["Vary"] = "Origin"
-			}
-			if reqOptions && !ok {
+			} else {
 				http.Error(ctx.ResponseWriter(), fmt.Sprintf("CORS request from prohibited domain %v", origin), http.StatusBadRequest)
 				return
 			}
@@ -123,9 +124,7 @@ func CORS(options ...Options) flamego.Handler {
 			}
 		})
 
-		if reqOptions {
-			ctx.ResponseWriter().WriteHeader(http.StatusOK) // return response
-			return
-		}
+		ctx.ResponseWriter().WriteHeader(http.StatusOK) // return response
+		return
 	}
 }
