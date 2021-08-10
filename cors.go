@@ -88,13 +88,13 @@ func CORS(options ...Options) flamego.Handler {
 		} else {
 			origin := ctx.Request().Header.Get("Origin")
 			if origin == "" {
-				http.Error(ctx.ResponseWriter(), "missing origin header in CORS request", http.StatusBadRequest)
+				http.Error(ctx.ResponseWriter(), "Missing origin header in CORS request", http.StatusBadRequest)
 				return
 			}
 
 			u, err := url.Parse(origin)
 			if err != nil {
-				http.Error(ctx.ResponseWriter(), fmt.Sprintf("Failed to parse CORS origin header. Reason: %v", err), http.StatusBadRequest)
+				http.Error(ctx.ResponseWriter(), fmt.Sprintf("Unable to parse CORS origin header: %v", err), http.StatusBadRequest)
 				return
 			}
 
