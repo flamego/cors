@@ -18,16 +18,16 @@ import (
 
 // Options contains options for the cors.CORS middleware.
 type Options struct {
-	// Scheme may be http or https as accepted schemes or the '*'
+	// Scheme may be http or https as accepted schemes or the "*"
 	// wildcard to accept any scheme. Default is "http".
 	Scheme string
 	// AllowDomain is a comma separated list of domains that are
-	// allowed to run CORS requests. Special values are the  a single '*'
+	// allowed to initiate CORS requests. Special values are the a single "*"
 	// wildcard that will allow any domain to send requests without
-	// credentials and the special '!*' wildcard which will reply with
-	// requesting domain in the 'access-control-allow-origin' header and
+	// credentials and the special "!*" wildcard which will reply with
+	// requesting domain in the "access-control-allow-origin" header and
 	// hence allow requests from any domain *with* credentials.
-	// Default is '*'.
+	// Default is "*".
 	AllowDomain []string
 	// AllowSubdomain allowed subdomains of domains to run CORS requests.
 	// Default is false.
