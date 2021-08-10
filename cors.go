@@ -105,17 +105,16 @@ func CORS(options ...Options) flamego.Handler {
 					break
 				}
 			}
-			if ok {
-				if opt.Scheme != "*" {
-					u.Scheme = opt.Scheme
-				}
-				headers["Access-Control-Allow-Origin"] = u.String()
-				headers["Access-Control-Allow-Credentials"] = strconv.FormatBool(opt.AllowCredentials)
-				headers["Vary"] = "Origin"
-			} else {
+			if !ok {
 				http.Error(ctx.ResponseWriter(), fmt.Sprintf("CORS request from prohibited domain %v", origin), http.StatusBadRequest)
 				return
 			}
+			if opt.Scheme != "*" {
+				u.Scheme = opt.Scheme
+			}
+			headers["Access-Control-Allow-Origin"] = u.String()
+			headers["Access-Control-Allow-Credentials"] = strconv.FormatBool(opt.AllowCredentials)
+			headers["Vary"] = "Origin"
 		}
 
 		ctx.ResponseWriter().Before(func(w flamego.ResponseWriter) {
