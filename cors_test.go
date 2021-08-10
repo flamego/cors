@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -22,7 +23,7 @@ func TestCORS(t *testing.T) {
 		return "ok"
 	})
 
-	tests := []struct {
+	defaultTests := []struct {
 		name    string
 		method  string
 		headers map[string]string
@@ -45,7 +46,7 @@ func TestCORS(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, test := range defaultTests {
 		t.Run(test.name, func(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req, err := http.NewRequest(test.method, "/", nil)
@@ -58,4 +59,90 @@ func TestCORS(t *testing.T) {
 			}
 		})
 	}
+
+	f2 := flamego.NewWithLogger(&bytes.Buffer{})
+	f2.Use(CORS(Options{
+		Scheme: "https",
+		AllowDomain: []string{
+			"example.com",
+		},
+		AllowSubdomain: false,
+		Methods: []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodOptions,
+		},
+		MaxAge:           time.Duration(20) * time.Second,
+		AllowCredentials: false,
+	}))
+	f2.Get("/", func(c flamego.Context) string {
+		return "ok"
+	})
+
+	customTests := []struct {
+		name       string
+		origin     string
+		method     string
+		headers    map[string]string
+		statueCode int
+	}{
+		{
+			name:   "Error method",
+			origin: "https://example.com",
+			method: http.MethodGet,
+			headers: map[string]string{
+				"Access-Control-Allow-Origin": "",
+				"Access-Control-Max-Age":      "",
+			},
+			statueCode: 200,
+		},
+		{
+			name:   "Default cors response",
+			origin: "https://example.com",
+			method: http.MethodOptions,
+			headers: map[string]string{
+				"Access-Control-Allow-Origin": "https://example.com",
+				"Access-Control-Max-Age":      "20",
+			},
+			statueCode: 200,
+		},
+		{
+			name:   "Error subdomain",
+			origin: "https://a.example.com",
+			method: http.MethodOptions,
+			headers: map[string]string{
+				"Access-Control-Allow-Origin": "",
+				"Access-Control-Max-Age":      "",
+			},
+			statueCode: 400,
+		},
+		{
+			name:   "Error scheme",
+			origin: "http://example.com",
+			method: http.MethodOptions,
+			headers: map[string]string{
+				"Access-Control-Allow-Origin": "https://example.com",
+				"Access-Control-Max-Age":      "20",
+			},
+			statueCode: 200,
+		},
+	}
+
+	for _, test := range customTests {
+		t.Run(test.name, func(t *testing.T) {
+			resp := httptest.NewRecorder()
+			req, err := http.NewRequest(test.method, "/", nil)
+			assert.Nil(t, err)
+			req.Header.Set("Origin", test.origin)
+
+			f2.ServeHTTP(resp, req)
+
+			assert.Equal(t, test.statueCode, resp.Code)
+
+			for headerKey, headerValue := range test.headers {
+				assert.Equal(t, headerValue, resp.Header().Get(headerKey))
+			}
+		})
+	}
+
 }
