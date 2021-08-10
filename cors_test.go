@@ -22,11 +22,40 @@ func TestCORS(t *testing.T) {
 		return "ok"
 	})
 
-	resp := httptest.NewRecorder()
-	req, err := http.NewRequest(http.MethodOptions, "/", nil)
-	assert.Nil(t, err)
+	tests := []struct {
+		name    string
+		method  string
+		headers map[string]string
+	}{
+		{
+			name:   "Error method",
+			method: http.MethodGet,
+			headers: map[string]string{
+				"Access-Control-Allow-Origin": "",
+				"Access-Control-Max-Age":      "",
+			},
+		},
+		{
+			name:   "Default cors response",
+			method: http.MethodOptions,
+			headers: map[string]string{
+				"Access-Control-Allow-Origin": "*",
+				"Access-Control-Max-Age":      "600",
+			},
+		},
+	}
 
-	f.ServeHTTP(resp, req)
-	assert.Equal(t, "*", resp.Header().Get("Access-Control-Allow-Origin"))
-	assert.Equal(t, "600", resp.Header().Get("Access-Control-Max-Age"))
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			resp := httptest.NewRecorder()
+			req, err := http.NewRequest(test.method, "/", nil)
+			assert.Nil(t, err)
+
+			f.ServeHTTP(resp, req)
+
+			for headerKey, headerValue := range test.headers {
+				assert.Equal(t, headerValue, resp.Header().Get(headerKey))
+			}
+		})
+	}
 }
