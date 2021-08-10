@@ -131,7 +131,7 @@ func TestCORS(t *testing.T) {
 			name:   "Error scheme",
 			method: http.MethodOptions,
 			reqHeaders: map[string]string{
-				"Origin": "https://example.com",
+				"Origin": "http://example.com",
 			},
 			respHeaders: map[string]string{
 				"Access-Control-Allow-Origin":      "https://example.com",
