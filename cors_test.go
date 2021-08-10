@@ -24,14 +24,14 @@ func TestCORS(t *testing.T) {
 	})
 
 	defaultTests := []struct {
-		name    string
-		method  string
-		headers map[string]string
+		name        string
+		method      string
+		respHeaders map[string]string
 	}{
 		{
 			name:   "Error method",
 			method: http.MethodGet,
-			headers: map[string]string{
+			respHeaders: map[string]string{
 				"Access-Control-Allow-Origin": "",
 				"Access-Control-Max-Age":      "",
 			},
@@ -39,7 +39,7 @@ func TestCORS(t *testing.T) {
 		{
 			name:   "Default cors response",
 			method: http.MethodOptions,
-			headers: map[string]string{
+			respHeaders: map[string]string{
 				"Access-Control-Allow-Origin": "*",
 				"Access-Control-Max-Age":      "600",
 			},
@@ -54,7 +54,7 @@ func TestCORS(t *testing.T) {
 
 			f.ServeHTTP(resp, req)
 
-			for headerKey, headerValue := range test.headers {
+			for headerKey, headerValue := range test.respHeaders {
 				assert.Equal(t, headerValue, resp.Header().Get(headerKey))
 			}
 		})
@@ -73,56 +73,70 @@ func TestCORS(t *testing.T) {
 			http.MethodOptions,
 		},
 		MaxAge:           time.Duration(20) * time.Second,
-		AllowCredentials: false,
+		AllowCredentials: true,
 	}))
 	f2.Get("/", func(c flamego.Context) string {
 		return "ok"
 	})
 
 	customTests := []struct {
-		name       string
-		origin     string
-		method     string
-		headers    map[string]string
-		statueCode int
+		name        string
+		method      string
+		reqHeaders  map[string]string
+		respHeaders map[string]string
+		statueCode  int
 	}{
 		{
 			name:   "Error method",
-			origin: "https://example.com",
 			method: http.MethodGet,
-			headers: map[string]string{
-				"Access-Control-Allow-Origin": "",
-				"Access-Control-Max-Age":      "",
+			reqHeaders: map[string]string{
+				"Origin": "https://example.com",
+			},
+			respHeaders: map[string]string{
+				"Access-Control-Allow-Origin":      "",
+				"Access-Control-Max-Age":           "",
+				"Access-Control-Allow-Credentials": "",
 			},
 			statueCode: 200,
 		},
 		{
 			name:   "Default cors response",
-			origin: "https://example.com",
 			method: http.MethodOptions,
-			headers: map[string]string{
-				"Access-Control-Allow-Origin": "https://example.com",
-				"Access-Control-Max-Age":      "20",
+			reqHeaders: map[string]string{
+				"Origin":                         "https://example.com",
+				"Access-Control-Request-Headers": "Content-Type",
+			},
+			respHeaders: map[string]string{
+				"Access-Control-Allow-Origin":      "https://example.com",
+				"Access-Control-Max-Age":           "20",
+				"Access-Control-Allow-Credentials": "true",
+				"Access-Control-Allow-Headers":     "Content-Type",
 			},
 			statueCode: 200,
 		},
 		{
 			name:   "Error subdomain",
-			origin: "https://a.example.com",
 			method: http.MethodOptions,
-			headers: map[string]string{
-				"Access-Control-Allow-Origin": "",
-				"Access-Control-Max-Age":      "",
+			reqHeaders: map[string]string{
+				"Origin": "https://a.example.com",
+			},
+			respHeaders: map[string]string{
+				"Access-Control-Allow-Origin":      "",
+				"Access-Control-Max-Age":           "",
+				"Access-Control-Allow-Credentials": "",
 			},
 			statueCode: 400,
 		},
 		{
 			name:   "Error scheme",
-			origin: "http://example.com",
 			method: http.MethodOptions,
-			headers: map[string]string{
-				"Access-Control-Allow-Origin": "https://example.com",
-				"Access-Control-Max-Age":      "20",
+			reqHeaders: map[string]string{
+				"Origin": "https://example.com",
+			},
+			respHeaders: map[string]string{
+				"Access-Control-Allow-Origin":      "https://example.com",
+				"Access-Control-Max-Age":           "20",
+				"Access-Control-Allow-Credentials": "true",
 			},
 			statueCode: 200,
 		},
@@ -133,13 +147,15 @@ func TestCORS(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req, err := http.NewRequest(test.method, "/", nil)
 			assert.Nil(t, err)
-			req.Header.Set("Origin", test.origin)
+			for k, v := range test.reqHeaders {
+				req.Header.Set(k, v)
+			}
 
 			f2.ServeHTTP(resp, req)
 
 			assert.Equal(t, test.statueCode, resp.Code)
 
-			for headerKey, headerValue := range test.headers {
+			for headerKey, headerValue := range test.respHeaders {
 				assert.Equal(t, headerValue, resp.Header().Get(headerKey))
 			}
 		})
