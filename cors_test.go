@@ -86,7 +86,7 @@ func TestCustomCORS(t *testing.T) {
 		method      string
 		reqHeaders  map[string]string
 		wantHeaders map[string]string
-		statueCode  int
+		wantCode    int
 	}{
 		{
 			name:   "error method",
@@ -99,7 +99,7 @@ func TestCustomCORS(t *testing.T) {
 				"Access-Control-Max-Age":           "",
 				"Access-Control-Allow-Credentials": "",
 			},
-			statueCode: http.StatusOK,
+			wantCode: http.StatusOK,
 		},
 		{
 			name:   "default response",
@@ -114,7 +114,7 @@ func TestCustomCORS(t *testing.T) {
 				"Access-Control-Allow-Credentials": "true",
 				"Access-Control-Allow-Headers":     "Content-Type",
 			},
-			statueCode: http.StatusOK,
+			wantCode: http.StatusOK,
 		},
 		{
 			name:   "error subdomain",
@@ -127,7 +127,7 @@ func TestCustomCORS(t *testing.T) {
 				"Access-Control-Max-Age":           "",
 				"Access-Control-Allow-Credentials": "",
 			},
-			statueCode: http.StatusBadRequest,
+			wantCode: http.StatusBadRequest,
 		},
 		{
 			name:   "error scheme",
@@ -140,7 +140,7 @@ func TestCustomCORS(t *testing.T) {
 				"Access-Control-Max-Age":           "20",
 				"Access-Control-Allow-Credentials": "true",
 			},
-			statueCode: http.StatusOK,
+			wantCode: http.StatusOK,
 		},
 	}
 
@@ -155,7 +155,7 @@ func TestCustomCORS(t *testing.T) {
 
 			f.ServeHTTP(resp, req)
 
-			assert.Equal(t, test.statueCode, resp.Code)
+			assert.Equal(t, test.wantCode, resp.Code)
 
 			for headerKey, headerValue := range test.wantHeaders {
 				assert.Equal(t, headerValue, resp.Header().Get(headerKey))
