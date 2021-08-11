@@ -26,12 +26,12 @@ func TestCORS(t *testing.T) {
 	tests := []struct {
 		name        string
 		method      string
-		respHeaders map[string]string
+		wantHeaders map[string]string
 	}{
 		{
 			name:   "error method",
 			method: http.MethodGet,
-			respHeaders: map[string]string{
+			wantHeaders: map[string]string{
 				"Access-Control-Allow-Origin": "",
 				"Access-Control-Max-Age":      "",
 			},
@@ -39,7 +39,7 @@ func TestCORS(t *testing.T) {
 		{
 			name:   "default response",
 			method: http.MethodOptions,
-			respHeaders: map[string]string{
+			wantHeaders: map[string]string{
 				"Access-Control-Allow-Origin": "*",
 				"Access-Control-Max-Age":      "600",
 			},
@@ -54,7 +54,7 @@ func TestCORS(t *testing.T) {
 
 			f.ServeHTTP(resp, req)
 
-			for headerKey, headerValue := range test.respHeaders {
+			for headerKey, headerValue := range test.wantHeaders {
 				assert.Equal(t, headerValue, resp.Header().Get(headerKey))
 			}
 		})
