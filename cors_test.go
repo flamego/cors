@@ -23,13 +23,13 @@ func TestCORS(t *testing.T) {
 		return "ok"
 	})
 
-	defaultTests := []struct {
+	tests := []struct {
 		name        string
 		method      string
 		respHeaders map[string]string
 	}{
 		{
-			name:   "Error method",
+			name:   "error method",
 			method: http.MethodGet,
 			respHeaders: map[string]string{
 				"Access-Control-Allow-Origin": "",
@@ -37,7 +37,7 @@ func TestCORS(t *testing.T) {
 			},
 		},
 		{
-			name:   "Default cors response",
+			name:   "default response",
 			method: http.MethodOptions,
 			respHeaders: map[string]string{
 				"Access-Control-Allow-Origin": "*",
@@ -46,7 +46,7 @@ func TestCORS(t *testing.T) {
 		},
 	}
 
-	for _, test := range defaultTests {
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req, err := http.NewRequest(test.method, "/", nil)
