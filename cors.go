@@ -81,7 +81,7 @@ func CORS(options ...Options) flamego.Handler {
 		headers := map[string]string{
 			"Access-Control-Allow-Methods": strings.Join(opt.Methods, ","),
 			"Access-Control-Allow-Headers": ctx.Request().Header.Get("Access-Control-Request-Headers"),
-			"Access-Control-Max-Age":       strconv.Itoa(int(opt.MaxAge.Seconds())),
+			"Access-Control-Max-Age":       strconv.FormatFloat(opt.MaxAge.Seconds(), 'f', 0, 64),
 		}
 		if opt.AllowDomain[0] == "*" {
 			headers["Access-Control-Allow-Origin"] = "*"
