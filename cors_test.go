@@ -59,9 +59,11 @@ func TestCORS(t *testing.T) {
 			}
 		})
 	}
+}
 
-	f2 := flamego.NewWithLogger(&bytes.Buffer{})
-	f2.Use(CORS(Options{
+func TestCustomCORS(t *testing.T) {
+	f := flamego.NewWithLogger(&bytes.Buffer{})
+	f.Use(CORS(Options{
 		Scheme: "https",
 		AllowDomain: []string{
 			"example.com",
@@ -75,74 +77,74 @@ func TestCORS(t *testing.T) {
 		MaxAge:           time.Duration(20) * time.Second,
 		AllowCredentials: true,
 	}))
-	f2.Get("/", func(c flamego.Context) string {
+	f.Get("/", func(c flamego.Context) string {
 		return "ok"
 	})
 
-	customTests := []struct {
+	tests := []struct {
 		name        string
 		method      string
 		reqHeaders  map[string]string
-		respHeaders map[string]string
+		wantHeaders map[string]string
 		statueCode  int
 	}{
 		{
-			name:   "Error method",
+			name:   "error method",
 			method: http.MethodGet,
 			reqHeaders: map[string]string{
 				"Origin": "https://example.com",
 			},
-			respHeaders: map[string]string{
+			wantHeaders: map[string]string{
 				"Access-Control-Allow-Origin":      "",
 				"Access-Control-Max-Age":           "",
 				"Access-Control-Allow-Credentials": "",
 			},
-			statueCode: 200,
+			statueCode: http.StatusOK,
 		},
 		{
-			name:   "Default cors response",
+			name:   "default response",
 			method: http.MethodOptions,
 			reqHeaders: map[string]string{
 				"Origin":                         "https://example.com",
 				"Access-Control-Request-Headers": "Content-Type",
 			},
-			respHeaders: map[string]string{
+			wantHeaders: map[string]string{
 				"Access-Control-Allow-Origin":      "https://example.com",
 				"Access-Control-Max-Age":           "20",
 				"Access-Control-Allow-Credentials": "true",
 				"Access-Control-Allow-Headers":     "Content-Type",
 			},
-			statueCode: 200,
+			statueCode: http.StatusOK,
 		},
 		{
-			name:   "Error subdomain",
+			name:   "error subdomain",
 			method: http.MethodOptions,
 			reqHeaders: map[string]string{
 				"Origin": "https://a.example.com",
 			},
-			respHeaders: map[string]string{
+			wantHeaders: map[string]string{
 				"Access-Control-Allow-Origin":      "",
 				"Access-Control-Max-Age":           "",
 				"Access-Control-Allow-Credentials": "",
 			},
-			statueCode: 400,
+			statueCode: http.StatusBadRequest,
 		},
 		{
-			name:   "Error scheme",
+			name:   "error scheme",
 			method: http.MethodOptions,
 			reqHeaders: map[string]string{
 				"Origin": "http://example.com",
 			},
-			respHeaders: map[string]string{
+			wantHeaders: map[string]string{
 				"Access-Control-Allow-Origin":      "https://example.com",
 				"Access-Control-Max-Age":           "20",
 				"Access-Control-Allow-Credentials": "true",
 			},
-			statueCode: 200,
+			statueCode: http.StatusOK,
 		},
 	}
 
-	for _, test := range customTests {
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req, err := http.NewRequest(test.method, "/", nil)
@@ -151,14 +153,13 @@ func TestCORS(t *testing.T) {
 				req.Header.Set(k, v)
 			}
 
-			f2.ServeHTTP(resp, req)
+			f.ServeHTTP(resp, req)
 
 			assert.Equal(t, test.statueCode, resp.Code)
 
-			for headerKey, headerValue := range test.respHeaders {
+			for headerKey, headerValue := range test.wantHeaders {
 				assert.Equal(t, headerValue, resp.Header().Get(headerKey))
 			}
 		})
 	}
-
 }
