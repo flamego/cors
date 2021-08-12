@@ -18,28 +18,27 @@ import (
 
 // Options contains options for the cors.CORS middleware.
 type Options struct {
-	// Scheme may be http or https as accepted schemes or the "*"
-	// wildcard to accept any scheme. Default is "http".
+	// Scheme may be http or https as accepted schemes or the "*" wildcard to accept
+	// any scheme. Default is "http".
 	Scheme string
-	// AllowDomain is a comma separated list of domains that are
-	// allowed to initiate CORS requests. Special values are the a single "*"
-	// wildcard that will allow any domain to send requests without
-	// credentials and the special "!*" wildcard which will reply with
-	// requesting domain in the "access-control-allow-origin" header and
-	// hence allow requests from any domain *with* credentials.
-	// Default is "*".
+	// AllowDomain is a comma separated list of domains that are allowed to initiate
+	// CORS requests. Special value is a single "*" wildcard that will allow any
+	// domain to send requests without credentials and the special "!*" wildcard
+	// which will reply with requesting domain in the "access-control-allow-origin"
+	// header and hence allow requests from any domain *with* credentials. Default
+	// is "*".
 	AllowDomain []string
-	// AllowSubdomain allowed subdomains of domains to run CORS requests.
-	// Default is false.
+	// AllowSubdomain allowed subdomains of domains to run CORS requests. Default is
+	// false.
 	AllowSubdomain bool
-	// Methods may be a comma separated list of HTTP-methods to be accepted.
-	// Default is ["GET", "POST", "OPTIONS"].
+	// Methods may be a comma separated list of HTTP-methods to be accepted. Default
+	// is ["GET", "POST", "OPTIONS"].
 	Methods []string
 	// MaxAgeSeconds may be the duration in secs for which the response is cached.
 	// Default is 600 * time.Second.
 	MaxAge time.Duration
-	// AllowCredentials set to false rejects any request with credentials.
-	// Default is false.
+	// AllowCredentials set to false rejects any request with credentials. Default
+	// is false.
 	AllowCredentials bool
 }
 
@@ -73,7 +72,7 @@ func prepareOptions(options []Options) Options {
 // adequate "Access-Control-*" response headers.
 func CORS(options ...Options) flamego.Handler {
 	opt := prepareOptions(options)
-	return func(ctx flamego.Context) {
+	return flamego.ContextInvoker(func(ctx flamego.Context) {
 		if ctx.Request().Method != http.MethodOptions {
 			return
 		}
@@ -100,7 +99,9 @@ func CORS(options ...Options) flamego.Handler {
 
 			var ok bool
 			for _, d := range opt.AllowDomain {
-				if u.Hostname() == d || (opt.AllowSubdomain && strings.HasSuffix(u.Hostname(), "."+d)) || d == "!*" {
+				if u.Hostname() == d ||
+					(opt.AllowSubdomain && strings.HasSuffix(u.Hostname(), "."+d)) ||
+					d == "!*" {
 					ok = true
 					break
 				}
@@ -124,5 +125,5 @@ func CORS(options ...Options) flamego.Handler {
 		})
 
 		ctx.ResponseWriter().WriteHeader(http.StatusOK)
-	}
+	})
 }
