@@ -1,4 +1,4 @@
-module cors
+module github.com/flamego/cors
 
 go 1.16
 
