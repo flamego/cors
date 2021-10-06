@@ -29,11 +29,11 @@ func TestCORS(t *testing.T) {
 		wantHeaders map[string]string
 	}{
 		{
-			name:   "error method",
+			name:   "method get",
 			method: http.MethodGet,
 			wantHeaders: map[string]string{
-				"Access-Control-Allow-Origin": "",
-				"Access-Control-Max-Age":      "",
+				"Access-Control-Allow-Origin": "*",
+				"Access-Control-Max-Age":      "600",
 			},
 		},
 		{
@@ -89,15 +89,15 @@ func TestCustomCORS(t *testing.T) {
 		wantCode    int
 	}{
 		{
-			name:   "error method",
+			name:   "method get",
 			method: http.MethodGet,
 			reqHeaders: map[string]string{
 				"Origin": "https://example.com",
 			},
 			wantHeaders: map[string]string{
-				"Access-Control-Allow-Origin":      "",
-				"Access-Control-Max-Age":           "",
-				"Access-Control-Allow-Credentials": "",
+				"Access-Control-Allow-Origin":      "https://example.com",
+				"Access-Control-Max-Age":           "20",
+				"Access-Control-Allow-Credentials": "true",
 			},
 			wantCode: http.StatusOK,
 		},

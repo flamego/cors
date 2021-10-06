@@ -73,10 +73,6 @@ func prepareOptions(options []Options) Options {
 func CORS(options ...Options) flamego.Handler {
 	opt := prepareOptions(options)
 	return flamego.ContextInvoker(func(ctx flamego.Context) {
-		if ctx.Request().Method != http.MethodOptions {
-			return
-		}
-
 		headers := map[string]string{
 			"Access-Control-Allow-Methods": strings.Join(opt.Methods, ","),
 			"Access-Control-Allow-Headers": ctx.Request().Header.Get("Access-Control-Request-Headers"),
