@@ -54,6 +54,10 @@ func TestCORS(t *testing.T) {
 
 			f.ServeHTTP(resp, req)
 
+			if test.method != http.MethodOptions {
+				assert.Equal(t, resp.Body.String(), "ok")
+			}
+
 			for headerKey, headerValue := range test.wantHeaders {
 				assert.Equal(t, headerValue, resp.Header().Get(headerKey))
 			}
@@ -154,6 +158,10 @@ func TestCustomCORS(t *testing.T) {
 			}
 
 			f.ServeHTTP(resp, req)
+
+			if test.method != http.MethodOptions {
+				assert.Equal(t, resp.Body.String(), "ok")
+			}
 
 			assert.Equal(t, test.wantCode, resp.Code)
 
