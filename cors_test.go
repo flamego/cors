@@ -16,10 +16,12 @@ import (
 	"github.com/flamego/flamego"
 )
 
+const responseBody = "ok"
+
 func TestCORS(t *testing.T) {
 	f := flamego.NewWithLogger(&bytes.Buffer{})
 	f.Use(CORS())
-	responseBody := "ok"
+
 	f.Get("/", func(c flamego.Context) string {
 		return responseBody
 	})
@@ -82,7 +84,7 @@ func TestCustomCORS(t *testing.T) {
 		MaxAge:           time.Duration(20) * time.Second,
 		AllowCredentials: true,
 	}))
-	responseBody := "ok"
+
 	f.Get("/", func(c flamego.Context) string {
 		return responseBody
 	})
