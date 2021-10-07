@@ -16,17 +16,21 @@ import (
 	"github.com/flamego/flamego"
 )
 
+const responseBody = "ok"
+
 func TestCORS(t *testing.T) {
 	f := flamego.NewWithLogger(&bytes.Buffer{})
 	f.Use(CORS())
+
 	f.Get("/", func(c flamego.Context) string {
-		return "ok"
+		return responseBody
 	})
 
 	tests := []struct {
-		name        string
-		method      string
-		wantHeaders map[string]string
+		name             string
+		method           string
+		wantHeaders      map[string]string
+		wantResponseBody string
 	}{
 		{
 			name:   "method get",
@@ -35,6 +39,7 @@ func TestCORS(t *testing.T) {
 				"Access-Control-Allow-Origin": "*",
 				"Access-Control-Max-Age":      "600",
 			},
+			wantResponseBody: responseBody,
 		},
 		{
 			name:   "default response",
@@ -53,6 +58,8 @@ func TestCORS(t *testing.T) {
 			assert.Nil(t, err)
 
 			f.ServeHTTP(resp, req)
+
+			assert.Equal(t, test.wantResponseBody, resp.Body.String())
 
 			for headerKey, headerValue := range test.wantHeaders {
 				assert.Equal(t, headerValue, resp.Header().Get(headerKey))
@@ -77,16 +84,18 @@ func TestCustomCORS(t *testing.T) {
 		MaxAge:           time.Duration(20) * time.Second,
 		AllowCredentials: true,
 	}))
+
 	f.Get("/", func(c flamego.Context) string {
-		return "ok"
+		return responseBody
 	})
 
 	tests := []struct {
-		name        string
-		method      string
-		reqHeaders  map[string]string
-		wantHeaders map[string]string
-		wantCode    int
+		name             string
+		method           string
+		reqHeaders       map[string]string
+		wantHeaders      map[string]string
+		wantCode         int
+		wantResponseBody string
 	}{
 		{
 			name:   "method get",
@@ -99,7 +108,8 @@ func TestCustomCORS(t *testing.T) {
 				"Access-Control-Max-Age":           "20",
 				"Access-Control-Allow-Credentials": "true",
 			},
-			wantCode: http.StatusOK,
+			wantCode:         http.StatusOK,
+			wantResponseBody: responseBody,
 		},
 		{
 			name:   "default response",
@@ -127,7 +137,8 @@ func TestCustomCORS(t *testing.T) {
 				"Access-Control-Max-Age":           "",
 				"Access-Control-Allow-Credentials": "",
 			},
-			wantCode: http.StatusBadRequest,
+			wantCode:         http.StatusBadRequest,
+			wantResponseBody: "CORS request from prohibited domain https://a.example.com\n",
 		},
 		{
 			name:   "error scheme",
@@ -155,6 +166,7 @@ func TestCustomCORS(t *testing.T) {
 
 			f.ServeHTTP(resp, req)
 
+			assert.Equal(t, test.wantResponseBody, resp.Body.String())
 			assert.Equal(t, test.wantCode, resp.Code)
 
 			for headerKey, headerValue := range test.wantHeaders {
