@@ -153,6 +153,15 @@ func TestCustomCORS(t *testing.T) {
 			},
 			wantCode: http.StatusOK,
 		},
+		{
+			name:   "host with port",
+			method: http.MethodOptions,
+			reqHeaders: map[string]string{
+				"Origin": "http://example.com:8080",
+			},
+			wantResponseBody: "CORS request from prohibited domain http://example.com:8080\n",
+			wantCode:         http.StatusBadRequest,
+		},
 	}
 
 	for _, test := range tests {
