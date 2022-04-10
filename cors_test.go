@@ -74,6 +74,7 @@ func TestCustomCORS(t *testing.T) {
 		Scheme: "https",
 		AllowDomain: []string{
 			"example.com",
+			"example.com:8080",
 		},
 		AllowSubdomain: false,
 		Methods: []string{
@@ -127,7 +128,19 @@ func TestCustomCORS(t *testing.T) {
 			wantCode: http.StatusOK,
 		},
 		{
-			name:   "error subdomain",
+			name:   "host with port",
+			method: http.MethodOptions,
+			reqHeaders: map[string]string{
+				"Origin": "https://example.com:8080",
+			},
+			wantHeaders: map[string]string{
+				"Access-Control-Allow-Origin": "https://example.com:8080",
+			},
+			wantCode: http.StatusOK,
+		},
+
+		{
+			name:   "bad subdomain",
 			method: http.MethodOptions,
 			reqHeaders: map[string]string{
 				"Origin": "https://a.example.com",
@@ -141,7 +154,7 @@ func TestCustomCORS(t *testing.T) {
 			wantResponseBody: "CORS request from prohibited domain https://a.example.com\n",
 		},
 		{
-			name:   "error scheme",
+			name:   "bad scheme",
 			method: http.MethodOptions,
 			reqHeaders: map[string]string{
 				"Origin": "http://example.com",
@@ -154,12 +167,12 @@ func TestCustomCORS(t *testing.T) {
 			wantCode: http.StatusOK,
 		},
 		{
-			name:   "host with port",
+			name:   "bad host with port",
 			method: http.MethodOptions,
 			reqHeaders: map[string]string{
-				"Origin": "http://example.com:8080",
+				"Origin": "http://example.com:10086",
 			},
-			wantResponseBody: "CORS request from prohibited domain http://example.com:8080\n",
+			wantResponseBody: "CORS request from prohibited domain http://example.com:10086\n",
 			wantCode:         http.StatusBadRequest,
 		},
 	}
