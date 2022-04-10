@@ -96,7 +96,7 @@ func CORS(options ...Options) flamego.Handler {
 			var ok bool
 			for _, d := range opt.AllowDomain {
 				if u.Host == d ||
-					(opt.AllowSubdomain && strings.HasSuffix(u.Hostname(), "."+d)) ||
+					(opt.AllowSubdomain && strings.HasSuffix(u.Host, "."+d)) ||
 					d == "!*" {
 					ok = true
 					break
