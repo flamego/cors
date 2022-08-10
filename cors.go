@@ -83,7 +83,7 @@ func CORS(options ...Options) flamego.Handler {
 		} else {
 			origin := ctx.Request().Header.Get("Origin")
 			if origin == "" {
-				// request is not a CORS request
+				// Skip non-CORS requests
 				return
 			}
 
