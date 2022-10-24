@@ -9,7 +9,7 @@ Package cors is a middleware that provides the Cross-Origin Resource Sharing for
 
 ## Installation
 
-The minimum requirement of Go is **1.16**.
+The minimum requirement of Go is **1.18**.
 
 	go get github.com/flamego/cors
 
