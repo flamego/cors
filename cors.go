@@ -110,8 +110,11 @@ func CORS(options ...Options) flamego.Handler {
 				u.Scheme = opt.Scheme
 			}
 			headers["Access-Control-Allow-Origin"] = u.String()
-			headers["Access-Control-Allow-Credentials"] = strconv.FormatBool(opt.AllowCredentials)
 			headers["Vary"] = "Origin"
+
+			if opt.AllowCredentials {
+				headers["Access-Control-Allow-Credentials"] = "true"
+			}
 		}
 
 		ctx.ResponseWriter().Before(func(w flamego.ResponseWriter) {
